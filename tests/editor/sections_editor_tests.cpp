@@ -6,7 +6,6 @@
 
 #include <array>
 #include <cstddef>
-#include <Windows.h>
 
 //Sections within test.bin
 constexpr auto text_section_name = pe::make_section_name(".text");
@@ -31,16 +30,8 @@ TEST(sections, add_section)
         EXPECT_EQ(sections[5].get_name(), reloc_section_name);
     }
 
-    const std::array<std::byte, 8> section_name{
-        std::byte('.'),
-        std::byte('n'),
-        std::byte('e'),
-        std::byte('w'),
-        std::byte('\0'),
-        std::byte('\0'),
-        std::byte('\0'),
-        std::byte('\0'),
-    };
+
+    const auto section_name = pe::make_section_name(".new");
 
     const std::vector<std::byte> section_data{
         std::byte('H'),
@@ -57,7 +48,9 @@ TEST(sections, add_section)
         std::byte('.'),
     };
 
-    const std::uint32_t characteristics = IMAGE_SCN_MEM_READ | IMAGE_SCN_CNT_INITIALIZED_DATA;
+    const pe::section_traits::characteristics characteristics =
+        pe::section_traits::characteristics::mem_read | 
+        pe::section_traits::characteristics::cnt_initialized_data;
 
     pe::editor::add_section(exe, section_name, section_data, characteristics);
 

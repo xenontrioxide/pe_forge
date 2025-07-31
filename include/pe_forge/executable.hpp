@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <variant>
-#include "section.hpp"
+#include <pe_forge/section.hpp>
 namespace pe
 {
     class executable

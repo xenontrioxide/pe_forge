@@ -54,7 +54,7 @@ namespace pe::editor
     bool add_section(executable& executable, 
                      const std::array<std::byte, 8>& name, 
                      const std::vector<std::byte>& data, 
-                     const std::uint32_t characteristics, 
+                     const pe::section_traits::characteristics characteristics,
                      const bool auto_move)
     {
         const auto file_alignment = pe::viewer::nt::get_file_alignment(executable);
@@ -90,7 +90,7 @@ namespace pe::editor
         std::memcpy(new_section->Name, name.data(), name.max_size());
         const auto raw_data_offset = new_section->PointerToRawData = last_section->PointerToRawData + last_section->SizeOfRawData;
         new_section->SizeOfRawData = pe::utils::align_section(data.size(), file_alignment); //Sections need to be aligned correctly
-        new_section->Characteristics = characteristics;
+        new_section->Characteristics = std::to_underlying(characteristics);
         new_section->VirtualAddress = last_section->VirtualAddress + pe::utils::align_section(last_section->Misc.VirtualSize, section_alignment);
         new_section->Misc.VirtualSize = data.size();
 

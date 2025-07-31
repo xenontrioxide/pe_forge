@@ -8,6 +8,6 @@ namespace pe::editor
     bool add_section(executable& executable,
                      const std::array<std::byte, 8>& name,
                      const std::vector<std::byte>& data,
-                     const std::uint32_t characteristics,
+                     const pe::section_traits::characteristics characteristics,
                      const bool auto_move = true);
 }
