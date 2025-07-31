@@ -5,6 +5,8 @@
 #include <string>
 #include <cassert>
 #include <cstdint>
+#include <stdexcept>
+#include <variant>
 
 
 namespace pe
@@ -80,18 +82,57 @@ namespace pe
     class imported_function
     {
     public:
+        /// <summary>
+        /// The function is imported by name.
+        /// </summary>
+        /// <param name="name">The name(symbol) of the function</param>
+        /// <param name="virtual_address">The virtual address of the function</param>
         imported_function(const std::string& name, const std::uintptr_t virtual_address) :
-            m_name(name), m_virtual_address(virtual_address), m_ordinal(0)
+            m_import_type(name), m_virtual_address(virtual_address), m_is_named(true)
         {
         }
 
+        /// <summary>
+        /// The function is imported by ordinal.
+        /// </summary>
+        /// <param name="ordinal">The offset(ordinal) of the function</param>
+        /// <param name="virtual_address">The virtual address of the function</param>
         imported_function(const std::uint16_t ordinal, const std::uintptr_t virtual_address) :
-            m_ordinal(ordinal), m_virtual_address(virtual_address), m_name()
+            m_import_type(ordinal), m_virtual_address(virtual_address), m_is_named(false)
         {
         }
+
+        std::string get_name() const
+        {
+            if (!m_is_named)
+                throw std::runtime_error("Import doesn't have a name.");
+            return std::get<std::string>(m_import_type);
+        }
+
+        std::uint16_t get_ordinal() const
+        {
+            if (m_is_named)
+                throw std::runtime_error("Import doesn't have an ordinal.");
+            return std::get<std::uint16_t>(m_import_type);
+        }
+
+        std::uintptr_t get_virtual_address() const
+        {
+            return m_virtual_address;
+        }
+
+        bool is_named() const
+        {
+            return m_is_named;
+        }
+
+        bool is_ordinal() const
+        {
+            return !m_is_named;
+        }
     private:
-        std::string m_name;
-        std::uint16_t m_ordinal;
+        bool m_is_named;
+        std::variant<std::string, std::uint16_t> m_import_type;
         std::uintptr_t m_virtual_address;
     };
 
