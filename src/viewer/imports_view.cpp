@@ -32,9 +32,10 @@ namespace pe::viewer
         {
             const auto function_import = thunks[i];
             const auto iat_function_import = iat_thunks[i];
+            const auto function_rva = iat_rva + i * sizeof(iat_function_import.u1.Function);
             if (function_import.u1.Ordinal & ordinal_flag)
             {
-                functions.push_back(imported_function{ function_import.u1.Ordinal & 0xFFFF, iat_function_import.u1.Function });
+                functions.push_back(imported_function{ function_import.u1.Ordinal & 0xFFFF, function_rva });
             }
             else
             {
@@ -47,7 +48,7 @@ namespace pe::viewer
 
                 const auto import_by_name = reinterpret_cast<const IMAGE_IMPORT_BY_NAME*>(executable.m_bytes.data() + import_by_name_offset);
                 const auto function_name = std::string(reinterpret_cast<const char*>(import_by_name->Name));
-                functions.push_back(imported_function{ function_name, iat_function_import.u1.Function });
+                functions.push_back(imported_function{ function_name, function_rva });
             }
         }
 
