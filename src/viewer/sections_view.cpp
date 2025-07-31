@@ -40,7 +40,7 @@ namespace pe::viewer
             section section{
                 section_name,
                 section_bytes,
-                pe_section.Characteristics,
+                static_cast<section_traits::characteristics>(pe_section.Characteristics),
                 pe_section.VirtualAddress,
                 pe_section.Misc.VirtualSize,
                 pe_section.PointerToRawData,

@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include "pe_forge/executable.hpp"
 #include "pe_forge/viewer/sections_view.hpp"
 
 #include "test_helpers.hpp"
@@ -7,72 +8,12 @@
 #include <cstddef>
 
 //Sections within test.bin
-constexpr auto text_section_name = std::array<std::byte, 8>{
-        std::byte('.'),
-        std::byte('t'),
-        std::byte('e'),
-        std::byte('x'),
-        std::byte('t'),
-        std::byte('\0'),
-        std::byte('\0'),
-        std::byte('\0')
-};
-
-constexpr auto rdata_section_name = std::array<std::byte, 8>{
-        std::byte('.'),
-        std::byte('r'),
-        std::byte('d'),
-        std::byte('a'),
-        std::byte('t'),
-        std::byte('a'),
-        std::byte('\0'),
-        std::byte('\0')
-};
-
-constexpr auto data_section_name = std::array<std::byte, 8>{
-        std::byte('.'),
-        std::byte('d'),
-        std::byte('a'),
-        std::byte('t'),
-        std::byte('a'),
-        std::byte('\0'),
-        std::byte('\0'),
-        std::byte('\0')
-};
-
-constexpr auto pdata_section_name = std::array<std::byte, 8>{
-        std::byte('.'),
-        std::byte('p'),
-        std::byte('d'),
-        std::byte('a'),
-        std::byte('t'),
-        std::byte('a'),
-        std::byte('\0'),
-        std::byte('\0')
-};
-
-constexpr auto rsrc_section_name = std::array<std::byte, 8>{
-        std::byte('.'),
-        std::byte('r'),
-        std::byte('s'),
-        std::byte('r'),
-        std::byte('c'),
-        std::byte('\0'),
-        std::byte('\0'),
-        std::byte('\0')
-};
-
-constexpr auto reloc_section_name = std::array<std::byte, 8>{
-        std::byte('.'),
-        std::byte('r'),
-        std::byte('e'),
-        std::byte('l'),
-        std::byte('o'),
-        std::byte('c'),
-        std::byte('\0'),
-        std::byte('\0')
-};
-
+constexpr auto text_section_name = pe::make_section_name(".text");
+constexpr auto rdata_section_name = pe::make_section_name(".rdata");
+constexpr auto data_section_name = pe::make_section_name(".data");
+constexpr auto pdata_section_name = pe::make_section_name(".pdata");
+constexpr auto rsrc_section_name = pe::make_section_name(".rsrc");
+constexpr auto reloc_section_name = pe::make_section_name(".reloc");
 TEST(sections, get_sections)
 {
     const auto executable_bytes = test_helpers::get_test_executable_bytes();
@@ -98,23 +39,20 @@ TEST(sections, get_section_valid)
     EXPECT_EQ(section_result->get_raw().m_size, 0x1200);
     EXPECT_EQ(section_result->get_virtual().m_pointer, 0x1000);
     EXPECT_EQ(section_result->get_virtual().m_size, 0x10C9);
-    EXPECT_EQ(section_result->get_characteristics(), 0x6000'0020);
+
+    using enum pe::section_traits::characteristics;
+    const auto characteristics = 
+        mem_execute |
+        mem_read |
+        cnt_code;
+    EXPECT_EQ(section_result->get_characteristics(), characteristics);
 }
 
 TEST(sections, get_section_invalid)
 {
     const auto executable_bytes = test_helpers::get_test_executable_bytes();
     const auto exe = pe::executable(executable_bytes);
-    constexpr std::array<std::byte, 8> invalid_section_name = {
-        std::byte('.'),
-        std::byte('n'),
-        std::byte('o'),
-        std::byte('n'),
-        std::byte('e'),
-        std::byte('\0'),
-        std::byte('\0'),
-        std::byte('\0')
-    };
+    const auto invalid_section_name = pe::make_section_name(".none");
 
     const auto section_result = pe::viewer::get_section(exe, invalid_section_name);
     EXPECT_FALSE(section_result.has_value());

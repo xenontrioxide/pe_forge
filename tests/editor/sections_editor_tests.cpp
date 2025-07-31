@@ -9,71 +9,12 @@
 #include <Windows.h>
 
 //Sections within test.bin
-constexpr auto text_section_name = std::array<std::byte, 8>{
-        std::byte('.'),
-        std::byte('t'),
-        std::byte('e'),
-        std::byte('x'),
-        std::byte('t'),
-        std::byte('\0'),
-        std::byte('\0'),
-        std::byte('\0')
-};
-
-constexpr auto rdata_section_name = std::array<std::byte, 8>{
-        std::byte('.'),
-        std::byte('r'),
-        std::byte('d'),
-        std::byte('a'),
-        std::byte('t'),
-        std::byte('a'),
-        std::byte('\0'),
-        std::byte('\0')
-};
-
-constexpr auto data_section_name = std::array<std::byte, 8>{
-        std::byte('.'),
-        std::byte('d'),
-        std::byte('a'),
-        std::byte('t'),
-        std::byte('a'),
-        std::byte('\0'),
-        std::byte('\0'),
-        std::byte('\0')
-};
-
-constexpr auto pdata_section_name = std::array<std::byte, 8>{
-        std::byte('.'),
-        std::byte('p'),
-        std::byte('d'),
-        std::byte('a'),
-        std::byte('t'),
-        std::byte('a'),
-        std::byte('\0'),
-        std::byte('\0')
-};
-
-constexpr auto rsrc_section_name = std::array<std::byte, 8>{
-        std::byte('.'),
-        std::byte('r'),
-        std::byte('s'),
-        std::byte('r'),
-        std::byte('c'),
-        std::byte('\0'),
-        std::byte('\0'),
-        std::byte('\0')
-};
-
-constexpr auto reloc_section_name = std::array<std::byte, 8>{
-        std::byte('.'),
-        std::byte('r'),
-        std::byte('e'),
-        std::byte('l'),
-        std::byte('o'),
-        std::byte('c'),
-        std::byte('\0'),
-        std::byte('\0')
-};
+constexpr auto text_section_name = pe::make_section_name(".text");
+constexpr auto rdata_section_name = pe::make_section_name(".rdata");
+constexpr auto data_section_name = pe::make_section_name(".data");
+constexpr auto pdata_section_name = pe::make_section_name(".pdata");
+constexpr auto rsrc_section_name = pe::make_section_name(".rsrc");
+constexpr auto reloc_section_name = pe::make_section_name(".reloc");
 
 TEST(sections, add_section)
 {
